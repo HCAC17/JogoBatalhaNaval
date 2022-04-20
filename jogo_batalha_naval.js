@@ -1,5 +1,7 @@
 
-let matriz = [] // tamanho matriz 10x10
+let matriz =  matrizMap() // tamanho matriz 10x10
+let matrizTela = matrizMap();
+let stringMatriz = '';
 
 // embarcações 
 // embarcação = [tamanho, quantidade]
@@ -7,6 +9,7 @@ let portaAvioes = [4,1,'p'];
 let submarino = [3,3,'s'];
 let destroier = [2,3,'d'];
 let bote = [1,2,'b'];
+
 
 let embarcacao = [
     [4,1,'p'],
@@ -17,21 +20,22 @@ let embarcacao = [
 
 // cria nosso mapa que é uma matriz
 function matrizMap(){
+    let montarMatriz = [];
     for(let x = 0; x < 10; x++){
-        matriz[x] = [];
+        montarMatriz[x] = [];
         for(let y = 0; y < 10; y++){
-            matriz[x][y] = 0;
+            montarMatriz[x][y] = 0;
         }
     }
     
-    return matriz
+    return montarMatriz;
 }
 
 //console.log(matrizMap());
 
 function numeroAleatorio(max){
-    let randon = Math.floor(Math.random() * max)
-    return randon;
+    let random = Math.floor(Math.random() * max)
+    return random;
 }
 //console.log(numeroAleatorio(4));
 
@@ -53,7 +57,7 @@ function direcao(){
 //console.log(direcao());
 
 function posicionarEmbarcacoes(embarcacao){
-    matrizMap();
+    matriz = matrizMap();
 
     for(let i = 0; i < embarcacao.length; i++){
         for(let j = 0; j < embarcacao[i][1]; j++){
@@ -69,15 +73,12 @@ function posicionarEmbarcacoes(embarcacao){
                         matriz[x][y] = embarcacao[i][2];
                     }else
                         return false;
-                        
-
                 }else {
                     y += direcao1[1]
                     if(y >= 0 && x <= 9 && matriz[x][y] === 0){
                         matriz[x][y] = embarcacao[i][2];
                     }else
                         return false;
-                        
                 }
             }
         }
@@ -85,8 +86,8 @@ function posicionarEmbarcacoes(embarcacao){
 
     return true;
 }
-
-var cont = 0;
+var cont = 0 ;
+//posicionarEmbarcacoes(embarcacao);
 
 while(true){
     //cont++
@@ -94,18 +95,49 @@ while(true){
     if(!result)
         var result = posicionarEmbarcacoes(embarcacao);
     else{
-        console.log(matriz, result);
+        console.log(matriz);
         break;
     }
 }
+var pontErro = 0;
+var pontAcerto = 0;
+var flagAcho = false;
 
-for(var i = 0; i < embarcacao.length; i++){
-    console.log(embarcacao[i][0])
+while(true){
+
+    var x = Number(prompt('Digite o x de 0-9: '));
+    var y = Number(prompt('Digite o y de 0-9: '));
+
+    if(x === 'p' || y === 'p')
+        break;
+
+    for(let i = 0; i < embarcacao.length; i++){
+        if(matriz[x][y] == embarcacao[i][2]){
+            alert('if achou');
+            matrizTela[x][y] = matriz[x][y];
+            flagAcho = true;
+        }
+    }
+
+    if(flagAcho){
+        flagAcho = false;
+        pontAcerto++
+    }else    
+        pontErro++
+
+    for(let i = 0; i < matrizTela.length; i++){
+        for(let j = 0; j < matrizTela[i].length; j++){
+            stringMatriz += matrizTela[i][j];
+        }
+        stringMatriz += '\n';
+    }
+
+    alert(stringMatriz);
+    alert(matrizTela);
+    alert(matriz);
+    alert(`erro ${pontErro}, acerto ${pontAcerto}`);
+    stringMatriz = '';
 }
 
-//console.log(posicionarEmbarcacoes(portaAvioes))
-//console.log(posicionarEmbarcacoes(submarino))
-//console.log(posicionarEmbarcacoes(destroier))
-//console.log(posicionarEmbarcacoes(bote))
 
 
