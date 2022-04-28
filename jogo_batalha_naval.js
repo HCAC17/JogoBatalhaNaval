@@ -1,6 +1,7 @@
 
 let matriz =  matrizMap() // tamanho matriz 10x10
 let matrizTela = matrizMap();
+let matrizTelaIA = matrizMap();
 let stringMatriz = '';
 
 // embarcações 
@@ -17,6 +18,13 @@ let embarcacao = [
     [2,3,'d'],
     [1,2,'b'],  
 ]
+
+var soma = 0;
+
+for(let i = 0; i < embarcacao.length; i++){
+    soma += embarcacao[i][0] * embarcacao[i][1];
+    console.log(soma)
+}
 
 // cria nosso mapa que é uma matriz
 function matrizMap(){
@@ -58,7 +66,7 @@ function direcao(){
 
 function posicionarEmbarcacoes(embarcacao){
     matriz = matrizMap();
-
+    var retorno = []
     for(let i = 0; i < embarcacao.length; i++){
         for(let j = 0; j < embarcacao[i][1]; j++){
             var direcao1 = direcao()
@@ -72,49 +80,66 @@ function posicionarEmbarcacoes(embarcacao){
                     if(x >= 0 && x <= 9 && matriz[x][y] === 0){
                         matriz[x][y] = embarcacao[i][2];
                     }else
-                        return false;
+                        return retorno = [matriz, false];
                 }else {
                     y += direcao1[1]
                     if(y >= 0 && x <= 9 && matriz[x][y] === 0){
                         matriz[x][y] = embarcacao[i][2];
                     }else
-                        return false;
+                        return retorno = [matriz, false];
                 }
             }
         }
     }
 
-    return true;
+    return retorno = [matriz, true];
 }
 var cont = 0 ;
 //posicionarEmbarcacoes(embarcacao);
-
+var result = posicionarEmbarcacoes(embarcacao);
 while(true){
     //cont++
     //console.log(cont)
-    if(!result)
-        var result = posicionarEmbarcacoes(embarcacao);
+    if(!result[1])
+        result = posicionarEmbarcacoes(embarcacao);
     else{
-        console.log(matriz);
         break;
     }
 }
+
+var result1 = posicionarEmbarcacoes(embarcacao);
+while(true){
+    //cont++
+    //console.log(cont)
+    if(!result1[1])
+        result1 = posicionarEmbarcacoes(embarcacao);
+    else{
+        break;
+    }
+}
+
+var mapaJogador = result[0];
+var mapaIA = result1[0];
+
+console.log(mapaJogador, mapaIA);
+
 var pontErro = 0;
 var pontAcerto = 0;
 var flagAcho = false;
 
-while(true){
+var elMatrizJogador = document.getElementById('matrizJogador');
+var elMatrizIA = document.getElementById('matrizIA');
+var elInput = document.getElementsByClassName('input')
 
-    var x = Number(prompt('Digite o x de 0-9: '));
-    var y = Number(prompt('Digite o y de 0-9: '));
-
-    if(x === 'p' || y === 'p')
-        break;
+//while(true){
+var funcao = function(x,y){
+    console.log(x,y)
+    //var x = elInput[0].value;
+    //var y = elInput[1].value;
 
     for(let i = 0; i < embarcacao.length; i++){
-        if(matriz[x][y] == embarcacao[i][2]){
-            alert('if achou');
-            matrizTela[x][y] = matriz[x][y];
+        if(mapaJogador[x][y] == embarcacao[i][2]){
+            matrizTela[x][y] = mapaJogador[x][y];
             flagAcho = true;
         }
     }
@@ -122,9 +147,23 @@ while(true){
     if(flagAcho){
         flagAcho = false;
         pontAcerto++
-    }else    
-        pontErro++
 
+        var txt = mapaJogador[x][y];
+        console.log(txt)
+        
+        // muda a img no html
+        divQuadrados.children[y].children[x].style.backgroundImage = 'url(./assets/img/acertojpg.png)'
+        divQuadrados.children[y].children[x].innerHTML = txt
+
+    }else{
+        // muda a img no html para uma bomba
+        divQuadrados.children[y].children[x].style.backgroundImage = 'url(./assets/img/bomb.png)'
+
+        pontErro++
+        
+    }
+
+    
     for(let i = 0; i < matrizTela.length; i++){
         for(let j = 0; j < matrizTela[i].length; j++){
             stringMatriz += matrizTela[i][j];
@@ -132,11 +171,19 @@ while(true){
         stringMatriz += '\n';
     }
 
-    alert(stringMatriz);
-    alert(matrizTela);
-    alert(matriz);
-    alert(`erro ${pontErro}, acerto ${pontAcerto}`);
+   
+
+    if(pontAcerto >= soma)
+        alert("GANHOU!!!!!!!!!!!!!!!!")
+
+    //elMatrizJogador.innerHTML = stringMatriz
+
+    // alert(matrizTela);
+    // alert(mapaJogador)
+    // alert(`erro ${pontErro}, acerto ${pontAcerto}`);
     stringMatriz = '';
+    //elInput[0].value = ''
+    //elInput[1].value = ''
 }
 
 
