@@ -7,6 +7,8 @@
 html, body{
     width: 100%;
     height: 100%;
+    display: flex;
+    justify-content: space-around;
 }
 
 #container {
@@ -47,7 +49,14 @@ html, body{
     width: 37.5vw;
     height: 36.5vw;
     background-image: url(./assets/img/sea.jpg);
-    
+    border: red 1px solid;
+}
+
+#divQuadradosIA {
+    display: flex;
+    width: 37.5vw;
+    height: 36.5vw;
+    background-image: url(./assets/img/sea.jpg);
     border: red 1px solid;
 }
 

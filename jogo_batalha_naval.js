@@ -2,7 +2,7 @@
 let matriz =  matrizMap() // tamanho matriz 10x10
 let matrizTela = matrizMap();
 let matrizTelaIA = matrizMap();
-let stringMatriz = '';
+
 
 // embarcações 
 // embarcação = [tamanho, quantidade]
@@ -23,7 +23,7 @@ var soma = 0;
 
 for(let i = 0; i < embarcacao.length; i++){
     soma += embarcacao[i][0] * embarcacao[i][1];
-    console.log(soma)
+    //console.log(soma)
 }
 
 // cria nosso mapa que é uma matriz
@@ -121,21 +121,19 @@ while(true){
 var mapaJogador = result[0];
 var mapaIA = result1[0];
 
-console.log(mapaJogador, mapaIA);
+//console.log(mapaJogador, mapaIA);
 
 var pontErro = 0;
 var pontAcerto = 0;
 var flagAcho = false;
 
-var elMatrizJogador = document.getElementById('matrizJogador');
-var elMatrizIA = document.getElementById('matrizIA');
-var elInput = document.getElementsByClassName('input')
+// variaveis de controle da ia
+var pontErroIA = 0;
+var pontAcertoIA = 0;
+var flagAchoIA = false;
 
-//while(true){
 var funcao = function(x,y){
     console.log(x,y)
-    //var x = elInput[0].value;
-    //var y = elInput[1].value;
 
     for(let i = 0; i < embarcacao.length; i++){
         if(mapaJogador[x][y] == embarcacao[i][2]){
@@ -163,28 +161,51 @@ var funcao = function(x,y){
         
     }
 
-    
-    for(let i = 0; i < matrizTela.length; i++){
-        for(let j = 0; j < matrizTela[i].length; j++){
-            stringMatriz += matrizTela[i][j];
-        }
-        stringMatriz += '\n';
-    }
-
-   
-
-    if(pontAcerto >= soma)
+    if(pontAcerto >= soma){
+        clearInterval(interval)
         alert("GANHOU!!!!!!!!!!!!!!!!")
-
-    //elMatrizJogador.innerHTML = stringMatriz
-
-    // alert(matrizTela);
-    // alert(mapaJogador)
-    // alert(`erro ${pontErro}, acerto ${pontAcerto}`);
-    stringMatriz = '';
-    //elInput[0].value = ''
-    //elInput[1].value = ''
+    }
 }
+
+setTimeout(function(){
+    var x = numeroAleatorio(10);
+    var y = numeroAleatorio(10);
+    var acer = 0;
+
+    var interval = setInterval(function(){
+        
+        
+        
+        y = numeroAleatorio(10);
+        x = numeroAleatorio(10);
+        
+        for(let i = 0; i < embarcacao.length; i++){
+            if(mapaIA[x][y] == embarcacao[i][2]){
+                flagAchoIA = true;
+            } 
+        }
+    
+        if(flagAchoIA){
+            flagAchoIA = false;
+
+            pontAcertoIA++
+
+            var txt = mapaIA[x][y];
+            
+            // muda a img no html
+            divQuadradosIA.children[x].children[y].style.backgroundImage = 'url(./assets/img/acertojpg.png)'
+            divQuadradosIA.children[x].children[y].innerHTML = txt
+    
+        }else{
+            // muda a img no html para uma bomba
+            divQuadradosIA.children[x].children[y].style.backgroundImage = 'url(./assets/img/bomb.png)'
+    
+            pontAcertoIA++
+            
+        }
+    
+    },500)
+}, 1000);
 
 
 
