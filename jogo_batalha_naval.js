@@ -94,6 +94,7 @@ function posicionarEmbarcacoes(embarcacao){
 
     return retorno = [matriz, true];
 }
+
 var cont = 0 ;
 //posicionarEmbarcacoes(embarcacao);
 var result = posicionarEmbarcacoes(embarcacao);
@@ -167,43 +168,120 @@ var funcao = function(x,y){
     }
 }
 
+var memoriaErro = [];
+var memoriaAcerto = [];
+var direcao2 = [];
+//var memoriaAcertoRecente = [];
+var tentativas = 0;
+var naoAchouCord = true;
+var verificaCord = 0;
+
+var marcarAcertoNoMapa = function(PosX,PosY){
+    var txt = mapaIA[PosX][PosY];
+    divQuadradosIA.children[PosX].children[PosY].style.backgroundImage = 'url(./assets/img/acertojpg.png)'
+    //console.log(PosX,PosY)
+    divQuadradosIA.children[PosX].children[PosY].innerHTML = txt
+}
+
+var verificaNasMemorias = function(PosX,PosY){
+    var cordLocal = true
+    while(cordLocal && (verificaCord < memoriaAcerto.length || verificaCord < memoriaErro.length)){
+        
+        if(verificaCord < memoriaAcerto.length){
+            if(memoriaAcerto[verificaCord][0] == PosX && memoriaAcerto[verificaCord][1] == PosY){
+                //console.log("suuu")
+                cordLocal = false
+                return false;
+            }
+        }
+        if(verificaCord < memoriaErro.length){
+            if(memoriaErro[verificaCord][0] == PosX && memoriaErro[verificaCord][1] == PosY){
+                //console.log("suuu")
+                cordLocal = false
+                return false;
+            }
+        }
+        
+        verificaCord++;
+        //console.log(`hi ${verificaCord}`)
+    }
+    
+    verificaCord = 0;
+    return true
+}
+
+var jogarNovamente = function(PosX,PosY){
+    direcao2 = direcao()
+
+    if(direcao2[0] === 'x'){
+        if(PosX + direcao2[1] >= 0 && PosX + direcao2[1] <= 9){
+            naoAchouCord = verificaNasMemorias(PosX + direcao2[1], PosY)
+            verificaSeAcertouOuNao(naoAchouCord, PosX + direcao2[1], PosY)
+            //console.log(PosX + direcao2[1])
+        }
+    }else{
+        if(PosY + direcao2[1] >= 0 && PosY + direcao2[1] <= 9){
+            naoAchouCord = verificaNasMemorias(PosX, PosY + direcao2[1])
+            verificaSeAcertouOuNao(naoAchouCord, PosX,PosY + direcao2[1])
+            //console.log(PosY + direcao2[1])
+        }
+    }
+}
+
+var verificaSeTemBarco = function(PosX, PosY){
+    for(let i = 0; i < embarcacao.length; i++){
+        if(mapaIA[PosX][PosY] == embarcacao[i][2]){
+            return true;
+        } 
+    }
+}
+
+var verificaSeAcertouOuNao = function(naoAchouCord, PosX,PosY){
+    console.log(PosX, PosY)
+    if(naoAchouCord){
+
+        flagAchoIA = verificaSeTemBarco(PosX,PosY) || false
+        
+        if(flagAchoIA){
+            var cordenaA = [PosX,PosY]
+            memoriaAcerto.push(cordenaA)
+            // muda a img no html
+            marcarAcertoNoMapa(PosX,PosY)
+
+            jogarNovamente(PosX,PosY)
+            
+            flagAchoIA = false
+            //pontAcertoIA++
+            tentativas++
+        }else{
+            var cordenaE = [PosX,PosY]
+            memoriaErro.push(cordenaE)
+            // muda a img no html para uma bomba
+            divQuadradosIA.children[PosX].children[PosY].style.backgroundImage = 'url(./assets/img/bomb.png)'
+            //pontAcertoIA++
+            //console.log(memoriaErro)
+            //tentativas++
+        }
+    }
+    //naoAchouCord = true;
+}
+
 setTimeout(function(){
     var x = numeroAleatorio(10);
     var y = numeroAleatorio(10);
-    var acer = 0;
 
     var interval = setInterval(function(){
-        
-        
-        
-        y = numeroAleatorio(10);
+
         x = numeroAleatorio(10);
+        y = numeroAleatorio(10);
         
-        for(let i = 0; i < embarcacao.length; i++){
-            if(mapaIA[x][y] == embarcacao[i][2]){
-                flagAchoIA = true;
-            } 
-        }
-    
-        if(flagAchoIA){
-            flagAchoIA = false;
+        //console.log(x,y)
+        naoAchouCord = verificaNasMemorias(x,y) || true
 
-            pontAcertoIA++
+        verificaSeAcertouOuNao(naoAchouCord,x,y)
+        
+        //console.log(memoriaAcerto,memoriaErro)
 
-            var txt = mapaIA[x][y];
-            
-            // muda a img no html
-            divQuadradosIA.children[x].children[y].style.backgroundImage = 'url(./assets/img/acertojpg.png)'
-            divQuadradosIA.children[x].children[y].innerHTML = txt
-    
-        }else{
-            // muda a img no html para uma bomba
-            divQuadradosIA.children[x].children[y].style.backgroundImage = 'url(./assets/img/bomb.png)'
-    
-            pontAcertoIA++
-            
-        }
-    
     },500)
 }, 1000);
 
