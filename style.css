@@ -25,7 +25,7 @@ html, body{
 }
 
 #matrizIA {
-    border: 1px solid black;
+    border: 1px solid rgb(0, 0, 0);
     height: 100%;
     width: 10%;
 }
@@ -57,7 +57,7 @@ html, body{
     width: 37.5vw;
     height: 36.5vw;
     background-image: url(./assets/img/sea.jpg);
-    border: red 1px solid;
+    border: rgb(0, 238, 255) 1px solid;
 }
 
 

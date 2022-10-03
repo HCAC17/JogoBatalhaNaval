@@ -1,8 +1,7 @@
-
+/*
 let matriz =  matrizMap() // tamanho matriz 10x10
 let matrizTela = matrizMap();
 let matrizTelaIA = matrizMap();
-
 
 // embarcações 
 // embarcação = [tamanho, quantidade]
@@ -10,7 +9,11 @@ let portaAvioes = [4,1,'p'];
 let submarino = [3,3,'s'];
 let destroier = [2,3,'d'];
 let bote = [1,2,'b'];
+*/
 
+var interval = null
+var jogar4Vezes = null
+let velocidade = 500
 
 let embarcacao = [
     [4,1,'p'],
@@ -20,7 +23,6 @@ let embarcacao = [
 ]
 
 var soma = 0;
-
 for(let i = 0; i < embarcacao.length; i++){
     soma += embarcacao[i][0] * embarcacao[i][1];
     //console.log(soma)
@@ -66,7 +68,6 @@ function direcao(){
 
 function posicionarEmbarcacoes(embarcacao){
     matriz = matrizMap();
-    var retorno = []
     for(let i = 0; i < embarcacao.length; i++){
         for(let j = 0; j < embarcacao[i][1]; j++){
             var direcao1 = direcao()
@@ -80,13 +81,13 @@ function posicionarEmbarcacoes(embarcacao){
                     if(x >= 0 && x <= 9 && matriz[x][y] === 0){
                         matriz[x][y] = embarcacao[i][2];
                     }else
-                        return retorno = [matriz, false];
+                        return [matriz, false];
                 }else {
                     y += direcao1[1]
                     if(y >= 0 && x <= 9 && matriz[x][y] === 0){
                         matriz[x][y] = embarcacao[i][2];
                     }else
-                        return retorno = [matriz, false];
+                        return [matriz, false];
                 }
             }
         }
@@ -121,8 +122,7 @@ while(true){
 
 var mapaJogador = result[0];
 var mapaIA = result1[0];
-
-//console.log(mapaJogador, mapaIA);
+var memorioDoMapa = result1[0]
 
 var pontErro = 0;
 var pontAcerto = 0;
@@ -150,7 +150,7 @@ var funcao = function(x,y){
         var txt = mapaJogador[x][y];
         console.log(txt)
         
-        // muda a img no html
+        // muda a img no html quando acerta
         divQuadrados.children[y].children[x].style.backgroundImage = 'url(./assets/img/acertojpg.png)'
         divQuadrados.children[y].children[x].innerHTML = txt
 
@@ -159,7 +159,6 @@ var funcao = function(x,y){
         divQuadrados.children[y].children[x].style.backgroundImage = 'url(./assets/img/bomb.png)'
 
         pontErro++
-        
     }
 
     if(pontAcerto >= soma){
@@ -171,59 +170,68 @@ var funcao = function(x,y){
 var memoriaErro = [];
 var memoriaAcerto = [];
 var direcao2 = [];
-//var memoriaAcertoRecente = [];
-var tentativas = 0;
 var naoAchouCord = true;
 var verificaCord = 0;
 
 var marcarAcertoNoMapa = function(PosX,PosY){
     var txt = mapaIA[PosX][PosY];
     divQuadradosIA.children[PosX].children[PosY].style.backgroundImage = 'url(./assets/img/acertojpg.png)'
-    //console.log(PosX,PosY)
     divQuadradosIA.children[PosX].children[PosY].innerHTML = txt
 }
 
+//----------------------------------ARRUMAR---------------------------------
 var verificaNasMemorias = function(PosX,PosY){
+    var verificar = null    
+    //console.log(memoriaAcerto.length, memoriaErro.length, "m", maiorMemoria)
+    for(let x = 0; x < memoriaAcerto.length; x++){
+        verificar = memoriaAcerto[x]
+        if(verificar[0] == PosX && verificar[1] == PosY) return false
+    }
+    for(let x = 0; x < memoriaErro.length; x++){
+        verificar = memoriaErro[x]
+        if(verificar[0] == PosX && verificar[1] == PosY) return false
+    }
+    return true
+    /*
     var cordLocal = true
     while(cordLocal && (verificaCord < memoriaAcerto.length || verificaCord < memoriaErro.length)){
         
         if(verificaCord < memoriaAcerto.length){
             if(memoriaAcerto[verificaCord][0] == PosX && memoriaAcerto[verificaCord][1] == PosY){
-                //console.log("suuu")
                 cordLocal = false
                 return false;
             }
         }
         if(verificaCord < memoriaErro.length){
             if(memoriaErro[verificaCord][0] == PosX && memoriaErro[verificaCord][1] == PosY){
-                //console.log("suuu")
                 cordLocal = false
                 return false;
             }
         }
-        
         verificaCord++;
-        //console.log(`hi ${verificaCord}`)
     }
     
     verificaCord = 0;
     return true
+    */
 }
+//---------------------------------ARRUMAR---------------------------------
 
-var jogarNovamente = function(PosX,PosY){
+var jogarNovamente = function(){
     direcao2 = direcao()
 
+    localX = memoriaAcerto[memoriaAcerto.length - 1][0]
+    localY = memoriaAcerto[memoriaAcerto.length - 1][1]
+
     if(direcao2[0] === 'x'){
-        if(PosX + direcao2[1] >= 0 && PosX + direcao2[1] <= 9){
-            naoAchouCord = verificaNasMemorias(PosX + direcao2[1], PosY)
-            verificaSeAcertouOuNao(naoAchouCord, PosX + direcao2[1], PosY)
-            //console.log(PosX + direcao2[1])
+        if(localX + direcao2[1] >= 0 && localX + direcao2[1] <= 9){
+            naoAchouCord = verificaNasMemorias(localX + direcao2[1], localY)
+            verificaSeAcertouOuNao(naoAchouCord, localX + direcao2[1], localY)
         }
     }else{
-        if(PosY + direcao2[1] >= 0 && PosY + direcao2[1] <= 9){
-            naoAchouCord = verificaNasMemorias(PosX, PosY + direcao2[1])
-            verificaSeAcertouOuNao(naoAchouCord, PosX,PosY + direcao2[1])
-            //console.log(PosY + direcao2[1])
+        if(localY + direcao2[1] >= 0 && localY + direcao2[1] <= 9){
+            naoAchouCord = verificaNasMemorias(localX, localY + direcao2[1])
+            verificaSeAcertouOuNao(naoAchouCord, localX,localY + direcao2[1])
         }
     }
 }
@@ -236,8 +244,10 @@ var verificaSeTemBarco = function(PosX, PosY){
     }
 }
 
+var jogarNoavamente4 = 0
+var jogarDeNovo = true
+
 var verificaSeAcertouOuNao = function(naoAchouCord, PosX,PosY){
-    console.log(PosX, PosY)
     if(naoAchouCord){
 
         flagAchoIA = verificaSeTemBarco(PosX,PosY) || false
@@ -245,45 +255,48 @@ var verificaSeAcertouOuNao = function(naoAchouCord, PosX,PosY){
         if(flagAchoIA){
             var cordenaA = [PosX,PosY]
             memoriaAcerto.push(cordenaA)
-            // muda a img no html
+            // muda a img no html quando acerta
             marcarAcertoNoMapa(PosX,PosY)
+            if (jogarDeNovo){
+                clearInterval(interval)
+                jogarDeNovo = false
 
-            jogarNovamente(PosX,PosY)
-            
+                jogar4Vezes = setInterval(function(){
+                    jogarNoavamente4++
+                    
+                    if (jogarNoavamente4 > 4) {
+                        jogarNoavamente4 = 0
+                        clearInterval(jogar4Vezes)
+                        iniciarGame()
+                        jogarDeNovo = true
+                    }else{
+                        jogarNovamente()
+                    }    
+                }, velocidade)
+            }
             flagAchoIA = false
-            //pontAcertoIA++
-            tentativas++
         }else{
             var cordenaE = [PosX,PosY]
             memoriaErro.push(cordenaE)
             // muda a img no html para uma bomba
             divQuadradosIA.children[PosX].children[PosY].style.backgroundImage = 'url(./assets/img/bomb.png)'
-            //pontAcertoIA++
-            //console.log(memoriaErro)
-            //tentativas++
         }
     }
-    //naoAchouCord = true;
+}
+
+var iniciarGame = function(){
+    interval = setInterval(function(){
+        var x = numeroAleatorio(10);
+        var y = numeroAleatorio(10);
+        
+        naoAchouCord = verificaNasMemorias(x,y)
+
+        verificaSeAcertouOuNao(naoAchouCord,x,y)
+
+        console.log(memoriaAcerto.length,memoriaErro.length)
+    },velocidade)
 }
 
 setTimeout(function(){
-    var x = numeroAleatorio(10);
-    var y = numeroAleatorio(10);
-
-    var interval = setInterval(function(){
-
-        x = numeroAleatorio(10);
-        y = numeroAleatorio(10);
-        
-        //console.log(x,y)
-        naoAchouCord = verificaNasMemorias(x,y) || true
-
-        verificaSeAcertouOuNao(naoAchouCord,x,y)
-        
-        //console.log(memoriaAcerto,memoriaErro)
-
-    },500)
+    iniciarGame()
 }, 1000);
-
-
-
